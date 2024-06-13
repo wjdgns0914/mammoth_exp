@@ -4,7 +4,7 @@
 # LICENSE file in the root directory of this source tree.
 
 from typing import Tuple
-
+import numpy as np
 import torch
 import torch.nn.functional as F
 import torchvision.transforms as transforms
@@ -27,6 +27,10 @@ class MyMNIST(MNIST):
         self.not_aug_transform = transforms.ToTensor()
         super(MyMNIST, self).__init__(root, train,
                                       transform, target_transform, download)
+        self.idx_inst = np.array([i for i in range(len(self.targets))])
+        idx_sorted = np.argsort(self.targets)
+        self.targets = list(np.array(self.targets)[idx_sorted])
+        self.data = self.data[idx_sorted]
 
     def __getitem__(self, index: int) -> Tuple[Image.Image, int, Image.Image]:
         """
@@ -52,9 +56,9 @@ class MyMNIST(MNIST):
             target = self.target_transform(target)
 
         if hasattr(self, 'logits'):
-            return img, target, original_img, self.logits[index]
+            return self.idx_inst[index], img, target, original_img, self.logits[index]
 
-        return img, target, original_img
+        return self.idx_inst[index], img, target, original_img
 
 
 class SequentialMNIST(ContinualDataset):

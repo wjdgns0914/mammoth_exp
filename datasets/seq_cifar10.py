@@ -10,8 +10,8 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 from PIL import Image
 from torchvision.datasets import CIFAR10
-
 from backbone.ResNet18 import resnet18
+import numpy as np
 from datasets.seq_tinyimagenet import base_path
 from datasets.transforms.denormalization import DeNormalize
 from datasets.utils.continual_dataset import (ContinualDataset,
@@ -37,7 +37,11 @@ class MyCIFAR10(CIFAR10):
         self.not_aug_transform = transforms.Compose([transforms.ToTensor()])
         self.root = root
         super(MyCIFAR10, self).__init__(root, train, transform, target_transform, download=not self._check_integrity())
-
+        self.idx_inst = np.array([i for i in range(len(self.targets))])
+        idx_sorted = np.argsort(self.targets)
+        self.targets = list(np.array(self.targets)[idx_sorted])
+        self.data = self.data[idx_sorted]
+        
     def __getitem__(self, index: int) -> Tuple[Image.Image, int, Image.Image]:
         """
         Gets the requested element from the dataset.
@@ -63,9 +67,9 @@ class MyCIFAR10(CIFAR10):
             target = self.target_transform(target)
 
         if hasattr(self, 'logits'):
-            return img, target, not_aug_img, self.logits[index]
+            return self.idx_inst[index], img, target, not_aug_img, self.logits[index]
 
-        return img, target, not_aug_img
+        return self.idx_inst[index], img, target, not_aug_img
 
 
 class SequentialCIFAR10(ContinualDataset):
