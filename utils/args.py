@@ -88,8 +88,9 @@ def add_management_args(parser: ArgumentParser) -> None:
                         help='The base path where to save datasets, logs, results.')
     parser.add_argument('--notes', type=str, default=None,
                         help='Notes for this run.')
-    parser.add_argument('--wandb_name', type=str, default=None,
-                        help='Wandb name for this run. Overrides the default name (`args.model`).')
+    parser.add_argument('--wandb_entity', type=str, help='Wandb entity')
+    parser.add_argument('--wandb_project', type=str, default='mammoth', help='Wandb project name')
+    parser.add_argument('--wandb_name', type=str, default=None, help='Wandb name for this run. Overrides the default name (`args.model`).')
 
     parser.add_argument('--non_verbose', default=0, choices=[0, 1], type=int, help='Make progress bars non verbose')
     parser.add_argument('--disable_log', default=0, choices=[0, 1], type=int, help='Disable logging?')
@@ -99,8 +100,7 @@ def add_management_args(parser: ArgumentParser) -> None:
     parser.add_argument('--enable_other_metrics', default=0, choices=[0, 1], type=int,
                         help='Enable computing additional metrics: forward and backward transfer.')
     parser.add_argument('--debug_mode', type=int, default=0, choices=[0, 1], help='Run only a few forward steps per epoch')
-    parser.add_argument('--wandb_entity', type=str, help='Wandb entity')
-    parser.add_argument('--wandb_project', type=str, default='mammoth', help='Wandb project name')
+
 
     parser.add_argument('--eval_epochs', type=int, default=None,
                         help='Perform inference intra-task at every `eval_epochs`.')
